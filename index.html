@@ -144,10 +144,6 @@
     let previousX, previousY;
     let undoStack = [];
 
-    // שמירה של מצב הקנבס לפני כל פעולה
-    function saveState() {
-      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    }
     function transparencyBackgroundColor() {
     const bgColor = bgColorPicker.value;
     if (!transparencyCheckBox.checked) {
