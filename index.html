@@ -110,15 +110,15 @@
     </label>
     <button id="clearCanvas">ניקוי</button>
     <button id="undoAction">ביטול פעולה אחרונה</button>
-    <button id="redoAction">ביצוע מחדש</button>
+    <button id="redoAction">ביצוע מחדש</button> <!-- כפתור Redo -->
     <button id="saveImage">שמור</button>
   </div>
   <div id="footer">
-  <p>1. יוצר המנדלות עובד בצורה אופטימלית במחשב.</p>
-  <p>2. לשימוש בטלפון, יש להפעיל את מצב המחשב בדפדפן.</p>
-  <p>3. שינויים בגודל הקנבס יגרמו למחיקת כל הציורים שבוצעו.</p>
-  <p>© כל הזכויות שמורות - יוצר מנדלות</p>
-</div>
+    <p>1. יוצר המנדלות עובד בצורה אופטימלית במחשב.</p>
+    <p>2. לשימוש בטלפון, יש להפעיל את מצב המחשב בדפדפן.</p>
+    <p>3. שינויים בגודל הקנבס יגרמו למחיקת כל הציורים שבוצעו.</p>
+    <p>© כל הזכויות שמורות - יוצר מנדלות</p>
+  </div>
   <script>
     // בחירת אלמנטים מהתפריט
     const canvas = document.getElementById("mandalaCanvas");
@@ -130,6 +130,7 @@
     const mirrorCheckbox = document.getElementById("mirror");
     const clearCanvasButton = document.getElementById("clearCanvas");
     const undoActionButton = document.getElementById("undoAction");
+    const redoActionButton = document.getElementById("redoAction"); // כפתור Redo
     const saveImageButton = document.getElementById("saveImage");
     const overlay = document.getElementById("overlay");
     const transparencyCheckBox = document.getElementById("transparency");
@@ -143,56 +144,31 @@
     let isDrawing = false;
     let previousX, previousY;
     let undoStack = [];
+    let redoStack = []; // הוספת מחסנית ל-Redo
 
-    function transparencyBackgroundColor() {
-    const bgColor = bgColorPicker.value;
-    if (!transparencyCheckBox.checked) {
-        // רק אם הרקע לא שקוף, עדכן את צבע הרקע
-        canvas.style.backgroundColor = bgColor;
-    } else {
-        // אם הרקע שקוף, אפס את צבע הרקע
-        canvas.style.backgroundColor = "transparent";
-    }        
-}
+    // שמירה של מצב הקנבס לפני כל פעולה
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      redoStack = []; // אם נעשתה פעולה חדשה, נמחק את מחסנית ה-Redo
+    }
 
-bgColorPicker.addEventListener("input", transparencyBackgroundColor);
-transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
+    // ביטול פעולה אחרונה
+    function undoLastAction() {
+      if (undoStack.length > 0) {
+        const lastState = undoStack.pop();
+        redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Redo
+        ctx.putImageData(lastState, 0, 0);
+      }
+    }
 
-
-// משתנים גלובליים
-let undoStack = [];
-let redoStack = []; // הוספת מחסנית ל-Redo
-
-// שמירה של מצב הקנבס לפני כל פעולה
-function saveState() {
-  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-  redoStack = []; // אם נעשתה פעולה חדשה, נמחק את מחסנית ה-Redo
-}
-
-// ביטול פעולה אחרונה
-function undoLastAction() {
-  if (undoStack.length > 0) {
-    const lastState = undoStack.pop();
-    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Redo
-    ctx.putImageData(lastState, 0, 0);
-  }
-}
-
-// פעולה של Redo
-function redoLastAction() {
-  if (redoStack.length > 0) {
-    const nextState = redoStack.pop();
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Undo
-    ctx.putImageData(nextState, 0, 0);
-  }
-}
-
-// ביטול פעולה אחרונה
-undoActionButton.addEventListener("click", undoLastAction);
-
-// הוספת כפתור Redo
-const redoActionButton = document.getElementById("redoAction"); // הוסף כפתור HTML עם id "redoAction"
-redoActionButton.addEventListener("click", redoLastAction);
+    // פעולה של Redo
+    function redoLastAction() {
+      if (redoStack.length > 0) {
+        const nextState = redoStack.pop();
+        undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Undo
+        ctx.putImageData(nextState, 0, 0);
+      }
+    }
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
@@ -221,36 +197,6 @@ redoActionButton.addEventListener("click", redoLastAction);
         ctx.rotate(angleStep);
       }
       ctx.restore();
-    }
-
-    // ציור סקטורים
-    function drawSectorLines(sectors) {
-      overlay.innerHTML = ""; // נקה את הקווים הקודמים
-      const angleStep = (2 * Math.PI) / sectors;
-
-      // עדכון הקואורדינטות של הקווים בהתאם לגודל הקנבס החדש
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-
-      for (let i = 0; i < sectors; i++) {
-        const x1 = centerX;
-        const y1 = 0;
-        const x2 = centerX + Math.cos(angleStep * i) * centerX;
-        const y2 = centerY + Math.sin(angleStep * i) * centerY;
-
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        const angle = angleStep * i;
-
-        line.setAttribute("x1", centerX);
-        line.setAttribute("y1", centerY);
-        line.setAttribute("x2", x2);
-        line.setAttribute("y2", y2);
-        line.setAttribute("stroke", "#cccccc"); // אפור בהיר
-        line.setAttribute("stroke-width", 1); // קווים דקים
-        line.setAttribute("stroke-dasharray", "5,5"); // קווים מקווקווים
-
-        overlay.appendChild(line);
-      }
     }
 
     // התחלת ציור
@@ -290,105 +236,62 @@ redoActionButton.addEventListener("click", redoLastAction);
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mousemove", draw);
     canvas.addEventListener("mouseup", endDrawing);
-    canvas.addEventListener("mouseleave", endDrawing);
+    canvas.addEventListener("mouseout", endDrawing);
 
-    // ציור בטלפון
-    canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      startDrawing(e.touches[0]);
+    // פעולה למחיקת הקנבס
+    clearCanvasButton.addEventListener("click", () => {
+      saveState(); // שמירה של המצב לפני המחיקה
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
-
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      draw(e.touches[0]);
-    });
-
-    canvas.addEventListener("touchend", endDrawing);
-    canvas.addEventListener("touchcancel", endDrawing);
 
     // שינוי גודל הקנבס
     resizeCanvasButton.addEventListener("click", () => {
-      const newWidth = parseInt(canvasWidthInput.value);
-      const newHeight = parseInt(canvasHeightInput.value);
+      const newWidth = canvasWidthInput.value;
+      const newHeight = canvasHeightInput.value;
       canvas.width = newWidth;
       canvas.height = newHeight;
       centerX = canvas.width / 2;
       centerY = canvas.height / 2;
-      drawSectorLines(sectorsInput.value); // מחדש את הסקטורים עם הגודל החדש
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
 
-    // ניקוי הקנבס
-clearCanvasButton.addEventListener("click", () => {
-  saveState(); // שמור את מצב הקנבס לפני הניקוי
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
+    // שמירה של התמונה
+    saveImageButton.addEventListener("click", () => {
+      const imageUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = imageUrl;
+      link.download = "mandala.png";
+      link.click();
+    });
 
     // ביטול פעולה אחרונה
     undoActionButton.addEventListener("click", undoLastAction);
 
-    // שמירת התמונה
-    // שמירת התמונה
-saveImageButton.addEventListener("click", () => {
-    // קבע את צבע הרקע או קבע רקע כשקוף
-    const backgroundColor = transparencyCheckBox.checked ? "rgba(255, 255, 255, 0)" : bgColorPicker.value;
-    // צור אלמנט זמני
-    const tempCanvas = document.createElement("canvas");
-    const tempCtx = tempCanvas.getContext("2d");
+    // ביצוע מחדש של פעולה
+    redoActionButton.addEventListener("click", redoLastAction);
 
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
-
-    tempCtx.fillStyle = backgroundColor;
-    tempCtx.beginPath();
-    tempCtx.arc(centerX, centerY, centerX, 0, 2 * Math.PI);
-    tempCtx.closePath();
-    tempCtx.fill();
-
-    // צייר את המנדלה
-    tempCtx.save();
-    tempCtx.beginPath();
-    tempCtx.arc(centerX, centerY, centerX, 0, 2 * Math.PI);
-    tempCtx.closePath();
-    tempCtx.clip();
-    tempCtx.drawImage(canvas, 0, 0);
-    tempCtx.restore();
-
-    // שמור את התמונה
-    const link = document.createElement("a");
-    link.download = "mandala.png";
-    link.href = tempCanvas.toDataURL();
-    link.click();
-  });
-
-
-// הגדרת ברירת המחדל של רקע שקוף לתיבה של הרקע שקוף לא תהיה מסומנת
-
-
-    // עדכון סקטורים ודברים נוספים
-    sectorsInput.addEventListener("input", () => {
-      const sectors = sectorsInput.value;
-      drawSectorLines(sectors); // עדכון המנדלה עם סקטורים חדשים
-    });
-
-    // עדכון צבעים
-    colorPicker.addEventListener("input", () => {
-      const color = colorPicker.value;
-      ctx.strokeStyle = color; // עדכון צבע הקו
-    });
-
+    // שינוי צבע הרקע
     bgColorPicker.addEventListener("input", () => {
-  const bgColor = bgColorPicker.value;
-  if (!transparencyCheckBox.checked) {
-    // רק אם הרקע לא שקוף, עדכן את צבע הרקע
-    canvas.style.backgroundColor = bgColor;
-  } else {
-    // אם הרקע שקוף, אפס את צבע הרקע
-    canvas.style.backgroundColor = "transparent";
-  }
-});
+      const bgColor = bgColorPicker.value;
+      canvas.style.backgroundColor = bgColor;
+    });
 
-    // הגדרת ברירת המחדל - יצירת קווים ראשוניים
-    drawSectorLines(sectorsInput.value);
+    // שקיפות של הרקע
+    transparencyCheckBox.addEventListener("change", () => {
+      const isTransparent = transparencyCheckBox.checked;
+      if (isTransparent) {
+        canvas.style.backgroundColor = "transparent";
+      } else {
+        canvas.style.backgroundColor = bgColorPicker.value;
+      }
+    });
+
+    // הפעלת ציור מנדלה ברגע שהעמוד נטען
+    window.onload = () => {
+      ctx.fillStyle = bgColorPicker.value;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
   </script>
 </body>
 </html>
