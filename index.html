@@ -186,10 +186,8 @@ function redoLastAction() {
 
 // מאזינים ללחצני Undo ו-Redo
 undoActionButton.addEventListener("click", undoLastAction);
-const redoActionButton = document.createElement("button");
-redoActionButton.textContent = "חזור על פעולה אחרונה";
 redoActionButton.addEventListener("click", redoLastAction);
-
+    
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
       ctx.save();
