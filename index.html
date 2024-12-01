@@ -294,10 +294,10 @@ transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
     });
 
     // ניקוי הקנבס
-    clearCanvasButton.addEventListener("click", () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      undoStack = []; // מנקה את הסטאק של הפעולות
-    });
+clearCanvasButton.addEventListener("click", () => {
+  saveState(); // שמור את מצב הקנבס לפני הניקוי
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
 
     // ביטול פעולה אחרונה
     undoActionButton.addEventListener("click", undoLastAction);
