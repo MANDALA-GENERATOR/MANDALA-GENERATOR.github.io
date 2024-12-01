@@ -195,9 +195,9 @@ const redoActionButton = document.createElement("button");
 redoActionButton.textContent = "חזור על פעולה אחרונה";
 redoActionButton.addEventListener("click", redoLastAction);
 
-// הוסף את כפתור ה-Redo לתפריט הבקרה
+// הוסף את כפתור ה-Redo מתחת לכפתור ה-Undo בתפריט
+document.getElementById("controls").appendChild(undoActionButton);
 document.getElementById("controls").appendChild(redoActionButton);
-
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
       ctx.save();
