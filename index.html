@@ -110,8 +110,6 @@
     </label>
     <button id="clearCanvas">ניקוי</button>
     <button id="undoAction">ביטול פעולה אחרונה</button>
-    <!-- כפתור שחזור פעולה אחרונה -->
-    <button id="redoAction">שחזור פעולה אחרונה</button>
     <button id="saveImage">שמור</button>
   </div>
   <div id="footer">
@@ -145,6 +143,10 @@
     let previousX, previousY;
     let undoStack = [];
 
+    // שמירה של מצב הקנבס לפני כל פעולה
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    }
     function transparencyBackgroundColor() {
     const bgColor = bgColorPicker.value;
     if (!transparencyCheckBox.checked) {
@@ -160,38 +162,13 @@ bgColorPicker.addEventListener("input", transparencyBackgroundColor);
 transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
 
-let undoStack = [];
-let redoStack = [];
-
-// שמירת מצב הקנבס
-function saveState() {
-  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-  redoStack = []; // ריקון מחסנית השחזור בעת פעולה חדשה
-}
-
-// ביטול פעולה אחרונה
-function undoLastAction() {
-  if (undoStack.length > 0) {
-    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמירת המצב הנוכחי לשחזור
-    const lastState = undoStack.pop();
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // ניקוי הקנבס
-    ctx.putImageData(lastState, 0, 0); // שחזור המצב האחרון
-  }
-}
-
-// שחזור פעולה אחרונה
-function redoLastAction() {
-  if (redoStack.length > 0) {
-    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמירת המצב הנוכחי לביטול
-    const redoState = redoStack.pop();
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // ניקוי הקנבס
-    ctx.putImageData(redoState, 0, 0); // שחזור המצב האחרון
-  }
-}
-
-// מאזינים לכפתורים
-undoActionButton.addEventListener("click", undoLastAction);
-redoActionButton.addEventListener("click", redoLastAction);
+    // ביטול פעולה אחרונה
+    function undoLastAction() {
+      if (undoStack.length > 0) {
+        const lastState = undoStack.pop();
+        ctx.putImageData(lastState, 0, 0);
+      }
+    }
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
