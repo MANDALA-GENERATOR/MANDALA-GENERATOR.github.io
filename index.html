@@ -84,39 +84,34 @@
     <canvas id="mandalaCanvas" width="600" height="600"></canvas>
     <svg id="overlay"></svg>
   </div>
-  <div id="controls" dir="rtl">
-    <label>רוחב קנבס:
-      <input type="number" id="canvasWidth" value="600" min="100">
-    </label>
-    <label>גובה קנבס:
-      <input type="number" id="canvasHeight" value="600" min="100">
-    </label>
-    <button id="resizeCanvas">שנה גודל</button>
-    <label>צבע קו:
-      <input type="color" id="colorPicker" value="#000000">
-    </label>
-    <label>צבע רקע:
-      <input type="color" id="bgColorPicker" value="#ffffff">
-    </label>
-    <label>חלקים:
-      <input type="range" id="sectors" min="4" max="32" value="16">
-    </label>
-    <label>עובי הקו:
-      <input type="range" id="lineWidth" min="1" max="10" value="2">
-    </label>
-    <label>
-      <input type="checkbox" id="mirror" checked> סימטריה
-      <input type="checkbox" id="transparency" checked> רקע שקוף
-    </label>
-    <button id="clearCanvas">ניקוי</button>
-    <button id="undoAction">ביטול פעולה אחרונה</button>
-    <button id="saveImage">שמור</button>
-  </div>
-  <div id="footer">
-  <p>1. יוצר המנדלות עובד בצורה אופטימלית במחשב.</p>
-  <p>2. לשימוש בטלפון, יש להפעיל את מצב המחשב בדפדפן.</p>
-  <p>3. שינויים בגודל הקנבס יגרמו למחיקת כל הציורים שבוצעו.</p>
-  <p>© כל הזכויות שמורות - יוצר מנדלות</p>
+<div id="controls" dir="rtl">
+  <label>רוחב קנבס:
+    <input type="number" id="canvasWidth" value="600" min="100">
+  </label>
+  <label>גובה קנבס:
+    <input type="number" id="canvasHeight" value="600" min="100">
+  </label>
+  <button id="resizeCanvas">שנה גודל</button>
+  <label>צבע קו:
+    <input type="color" id="colorPicker" value="#000000">
+  </label>
+  <label>צבע רקע:
+    <input type="color" id="bgColorPicker" value="#ffffff">
+  </label>
+  <label>חלקים:
+    <input type="range" id="sectors" min="4" max="32" value="16">
+  </label>
+  <label>עובי הקו:
+    <input type="range" id="lineWidth" min="1" max="10" value="2">
+  </label>
+  <label>
+    <input type="checkbox" id="mirror" checked> סימטריה
+    <input type="checkbox" id="transparency" checked> רקע שקוף
+  </label>
+  <button id="clearCanvas">ניקוי</button>
+  <button id="undoAction">ביטול פעולה אחרונה</button>
+  <button id="redoAction">חזור על פעולה אחרונה</button>
+  <button id="saveImage">שמור</button>
 </div>
   <script>
     // בחירת אלמנטים מהתפריט
@@ -195,9 +190,6 @@ const redoActionButton = document.createElement("button");
 redoActionButton.textContent = "חזור על פעולה אחרונה";
 redoActionButton.addEventListener("click", redoLastAction);
 
-// הוסף את כפתור ה-Redo מתחת לכפתור ה-Undo בתפריט
-document.getElementById("controls").appendChild(undoActionButton);
-document.getElementById("controls").appendChild(redoActionButton);
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
       ctx.save();
