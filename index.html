@@ -110,6 +110,7 @@
     </label>
     <button id="clearCanvas">ניקוי</button>
     <button id="undoAction">ביטול פעולה אחרונה</button>
+    <button id="redoAction">ביצוע מחדש</button>
     <button id="saveImage">שמור</button>
   </div>
   <div id="footer">
@@ -162,13 +163,40 @@ bgColorPicker.addEventListener("input", transparencyBackgroundColor);
 transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
 
-    // ביטול פעולה אחרונה
-    function undoLastAction() {
-      if (undoStack.length > 0) {
-        const lastState = undoStack.pop();
-        ctx.putImageData(lastState, 0, 0);
-      }
-    }
+// משתנים גלובליים
+let undoStack = [];
+let redoStack = []; // הוספת מחסנית ל-Redo
+
+// שמירה של מצב הקנבס לפני כל פעולה
+function saveState() {
+  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  redoStack = []; // אם נעשתה פעולה חדשה, נמחק את מחסנית ה-Redo
+}
+
+// ביטול פעולה אחרונה
+function undoLastAction() {
+  if (undoStack.length > 0) {
+    const lastState = undoStack.pop();
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Redo
+    ctx.putImageData(lastState, 0, 0);
+  }
+}
+
+// פעולה של Redo
+function redoLastAction() {
+  if (redoStack.length > 0) {
+    const nextState = redoStack.pop();
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // נשמור את המצב הנוכחי ב-Undo
+    ctx.putImageData(nextState, 0, 0);
+  }
+}
+
+// ביטול פעולה אחרונה
+undoActionButton.addEventListener("click", undoLastAction);
+
+// הוספת כפתור Redo
+const redoActionButton = document.getElementById("redoAction"); // הוסף כפתור HTML עם id "redoAction"
+redoActionButton.addEventListener("click", redoLastAction);
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
