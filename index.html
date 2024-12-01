@@ -162,13 +162,41 @@ bgColorPicker.addEventListener("input", transparencyBackgroundColor);
 transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
 
-    // ביטול פעולה אחרונה
-    function undoLastAction() {
-      if (undoStack.length > 0) {
-        const lastState = undoStack.pop();
-        ctx.putImageData(lastState, 0, 0);
-      }
-    }
+    // משתנים ל-Undo ו-Redo
+let redoStack = [];
+
+// שמירה של מצב הקנבס לפני כל פעולה (עודכן לניהול Redo)
+function saveState() {
+  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  redoStack = []; // נקה את ה-Redo Stack ברגע שמתבצעת פעולה חדשה
+}
+
+// ביטול פעולה אחרונה
+function undoLastAction() {
+  if (undoStack.length > 0) {
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמור את המצב הנוכחי ב-Redo Stack
+    const lastState = undoStack.pop();
+    ctx.putImageData(lastState, 0, 0);
+  }
+}
+
+// חזרה על פעולה שבוטלה
+function redoLastAction() {
+  if (redoStack.length > 0) {
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמור את המצב הנוכחי ב-Undo Stack
+    const redoState = redoStack.pop();
+    ctx.putImageData(redoState, 0, 0);
+  }
+}
+
+// מאזינים ללחצני Undo ו-Redo
+undoActionButton.addEventListener("click", undoLastAction);
+const redoActionButton = document.createElement("button");
+redoActionButton.textContent = "חזור על פעולה אחרונה";
+redoActionButton.addEventListener("click", redoLastAction);
+
+// הוסף את כפתור ה-Redo לתפריט הבקרה
+document.getElementById("controls").appendChild(redoActionButton);
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
