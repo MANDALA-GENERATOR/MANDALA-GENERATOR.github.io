@@ -110,6 +110,7 @@
     </label>
     <button id="clearCanvas">ניקוי</button>
     <button id="undoAction">ביטול פעולה אחרונה</button>
+    <button id="redoAction">חזור על פעולה שבוטלה</button>
     <button id="saveImage">שמור</button>
   </div>
   <div id="footer">
@@ -142,6 +143,7 @@
     let isDrawing = false;
     let previousX, previousY;
     let undoStack = [];
+    let redoStack = [];
 
     // שמירה של מצב הקנבס לפני כל פעולה
     function saveState() {
@@ -164,11 +166,23 @@ transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
     // ביטול פעולה אחרונה
     function undoLastAction() {
-      if (undoStack.length > 0) {
-        const lastState = undoStack.pop();
-        ctx.putImageData(lastState, 0, 0);
-      }
+  if (undoStack.length > 0) {
+    const lastState = undoStack.pop();
+    redoStack.push(lastState); // שמור את המצב שבוטל ל- redoStack
+    ctx.putImageData(lastState, 0, 0);
+  }
     }
+
+    // שחזור פעולה אחרונה 
+    function redoLastAction() {
+  if (redoStack.length > 0) {
+    const lastUndoState = redoStack.pop();
+    ctx.putImageData(lastUndoState, 0, 0);
+  }
+    }
+    const redoActionButton = document.getElementById("redoAction");
+
+redoActionButton.addEventListener("click", redoLastAction);
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
