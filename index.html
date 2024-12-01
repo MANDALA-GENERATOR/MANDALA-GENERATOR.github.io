@@ -110,6 +110,8 @@
     </label>
     <button id="clearCanvas">ניקוי</button>
     <button id="undoAction">ביטול פעולה אחרונה</button>
+    <!-- כפתור שחזור פעולה אחרונה -->
+    <button id="redoAction">שחזור פעולה אחרונה</button>
     <button id="saveImage">שמור</button>
   </div>
   <div id="footer">
@@ -162,13 +164,34 @@ bgColorPicker.addEventListener("input", transparencyBackgroundColor);
 transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
 
-    // ביטול פעולה אחרונה
-    function undoLastAction() {
-      if (undoStack.length > 0) {
-        const lastState = undoStack.pop();
-        ctx.putImageData(lastState, 0, 0);
-      }
-    }
+    // ערימה לשחזור פעולות שבוטלו
+let redoStack = [];
+
+// ביטול פעולה אחרונה
+function undoLastAction() {
+  if (undoStack.length > 0) {
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמור את המצב הנוכחי לשחזור
+    const lastState = undoStack.pop();
+    ctx.putImageData(lastState, 0, 0);
+  }
+}
+
+// שחזור פעולה אחרונה
+function redoLastAction() {
+  if (redoStack.length > 0) {
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמור את המצב הנוכחי לערימת הביטול
+    const redoState = redoStack.pop();
+    ctx.putImageData(redoState, 0, 0);
+  }
+}
+
+// אירוע לחיצה על שחזור פעולה אחרונה
+document.getElementById("redoAction").addEventListener("click", redoLastAction);
+
+// עדכון לחיצה על ביטול פעולה אחרונה
+undoActionButton.addEventListener("click", () => {
+  undoLastAction();
+});
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
