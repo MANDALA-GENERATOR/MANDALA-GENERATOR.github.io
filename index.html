@@ -164,22 +164,38 @@ bgColorPicker.addEventListener("input", transparencyBackgroundColor);
 transparencyCheckBox.addEventListener("input", transparencyBackgroundColor);
 
 
-// שמירה של מצב הקנבס לפני כל פעולה
+let undoStack = [];
+let redoStack = [];
+
+// שמירת מצב הקנבס
 function saveState() {
   undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  redoStack = []; // ריקון מחסנית השחזור בעת פעולה חדשה
 }
 
 // ביטול פעולה אחרונה
 function undoLastAction() {
   if (undoStack.length > 0) {
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמירת המצב הנוכחי לשחזור
     const lastState = undoStack.pop();
     ctx.clearRect(0, 0, canvas.width, canvas.height); // ניקוי הקנבס
-    ctx.putImageData(lastState, 0, 0); // החזרת המצב האחרון
+    ctx.putImageData(lastState, 0, 0); // שחזור המצב האחרון
   }
 }
 
-// מאזין לכפתור ביטול פעולה אחרונה
+// שחזור פעולה אחרונה
+function redoLastAction() {
+  if (redoStack.length > 0) {
+    undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); // שמירת המצב הנוכחי לביטול
+    const redoState = redoStack.pop();
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // ניקוי הקנבס
+    ctx.putImageData(redoState, 0, 0); // שחזור המצב האחרון
+  }
+}
+
+// מאזינים לכפתורים
 undoActionButton.addEventListener("click", undoLastAction);
+redoActionButton.addEventListener("click", redoLastAction);
 
     // ציור קווים במנדלה
     function drawLine(x1, y1, x2, y2, color, lineWidth, sectors, mirror) {
