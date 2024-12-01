@@ -147,7 +147,8 @@
 
     // שמירה של מצב הקנבס לפני כל פעולה
     function saveState() {
-      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  redoStack = []; // לאחר שמירה של מצב חדש, רוקן את redoStack
     }
     function transparencyBackgroundColor() {
     const bgColor = bgColorPicker.value;
