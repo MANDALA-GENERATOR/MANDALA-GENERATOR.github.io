@@ -64,19 +64,16 @@
       background-color: #777;
     }
   #footer {
-  margin-top: 20px;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* עיצוב אנכי */
+  height: 100vh; /* גובה הדף יתפוס 100% */
+  background-color: #f4f4f4;
   font-family: Arial, sans-serif;
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-  position: fixed; /* מיקום קבוע בתחתית */
-  bottom: 0; /* יעמוד בתחתית */
-  left: 0;
-  width: 100%; /* יתפוס את כל רוחב המסך */
-  background-color: #f4f4f4; /* צבע רקע לדף */
-  padding: 10px 0; /* רווחים סביב הטקסט */
-  box-sizing: border-box; /* יכלול את הרווחים בתוך הגודל הכללי */
-}
+  gap: 40px;
+  }
   </style>
 </head>
 <body>
