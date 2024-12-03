@@ -20,7 +20,7 @@
       position: relative;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
     }
     canvas {
       border-radius: 50%;
@@ -87,58 +87,23 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-<style>
-  body {
-    margin: 0;
-    display: flex;
-    flex-direction: column; /* סדר מלמעלה למטה */
-    align-items: center;
-    justify-content: flex-start; /* שמירה על תוכן מלמעלה */
-    height: 100vh;
-    background-color: #f4f4f4;
-    font-family: Arial, sans-serif;
-    gap: 20px; /* רווח בין הקנבס לממשק */
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000; /* הכפתור יישאר מעל כל האלמנטים האחרים */
+}
 
-  .canvas-container {
-    position: relative;
-  }
+.floating-button:hover {
+  background-color: #555;
+}
 
-  #controls {
-    width: 100%; /* יתפוס את כל רוחב המסך */
-    max-width: 800px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap; /* שובר שורות במידה שאין מקום */
-    justify-content: center; /* מרכז את הממשק */
-    gap: 20px;
-    background-color: #333;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-  }
-
-  #controls label,
-  #controls button {
-    flex: 1 1 calc(33.333% - 20px); /* פריסה של האלמנטים ב-3 עמודות */
-    text-align: center;
-  }
-
-  canvas {
-    border-radius: 50%;
-    cursor: crosshair;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    width: 100%;
-    height: 100%;
-  }
-</style>
+.material-icons {
+  font-size: 28px;
+  color: white;
+}
+  </style>
 </head>
 <body>
   <div class="canvas-container">
@@ -312,29 +277,31 @@ redoActionButton.addEventListener("click", redoLastAction);
     // ציור סקטורים
     function drawSectorLines(sectors) {
       overlay.innerHTML = ""; // נקה את הקווים הקודמים
-    function drawSectorLines(sectors) {
-  overlay.innerHTML = ""; // נקה את הקווים הקודמים
-  const angleStep = (2 * Math.PI) / sectors;
+      const angleStep = (2 * Math.PI) / sectors;
 
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
+      // עדכון הקואורדינטות של הקווים בהתאם לגודל הקנבס החדש
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
 
-  for (let i = 0; i < sectors; i++) {
-    const x2 = centerX + Math.cos(angleStep * i) * centerX;
-    const y2 = centerY + Math.sin(angleStep * i) * centerY;
+      for (let i = 0; i < sectors; i++) {
+        const x1 = centerX;
+        const y1 = 0;
+        const x2 = centerX + Math.cos(angleStep * i) * centerX;
+        const y2 = centerY + Math.sin(angleStep * i) * centerY;
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const angle = angleStep * i;
 
-    line.setAttribute("x1", centerX);
-    line.setAttribute("y1", centerY);
-    line.setAttribute("x2", x2);
-    line.setAttribute("y2", y2);
-    line.setAttribute("stroke", "#cccccc");
-    line.setAttribute("stroke-width", 1);
-    line.setAttribute("stroke-dasharray", "5,5");
+        line.setAttribute("x1", centerX);
+        line.setAttribute("y1", centerY);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke", "#cccccc"); // אפור בהיר
+        line.setAttribute("stroke-width", 1); // קווים דקים
+        line.setAttribute("stroke-dasharray", "5,5"); // קווים מקווקווים
 
-    overlay.appendChild(line);
-  }
+        overlay.appendChild(line);
+      }
     }
 
     // התחלת ציור
