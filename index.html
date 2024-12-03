@@ -7,21 +7,21 @@
   <title>יוצר מנדלות אונליין</title>
   <style>
     body {
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
-      font-family: Arial, sans-serif;
-      gap: 40px;
-    }
-    .canvas-container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    body {
+  margin: 0;
+  display: flex;
+  flex-direction: column; /* שינוי כיוון התצוגה לסטאק אנכי */
+  justify-content: flex-start; /* שמירה על הממשק מתחת לקנבס */
+  align-items: center; /* יישור למרכז רוחבית */
+  height: 100vh;
+  background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  gap: 20px; /* רווחים בין האלמנטים */
+}
+
+.canvas-container {
+  margin-top: 20px; /* רווח קל מעל הממשק */
+}
     canvas {
       border-radius: 50%;
       cursor: crosshair;
