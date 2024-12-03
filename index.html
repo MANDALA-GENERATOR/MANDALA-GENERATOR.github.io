@@ -78,10 +78,11 @@
   padding: 10px 0; /* רווחים סביב הטקסט */
   box-sizing: border-box; /* יכלול את הרווחים בתוך הגודל הכללי */
   }
+/* מיקום קבוע של הכפתור בפינה השמאלית התחתונה */
 .floating-button {
-  position: fixed; /* הכפתור יישאר במקום קבוע על המסך */
+  position: fixed; /* הכפתור צף */
   bottom: 20px; /* מרחק מהתחתית */
-  right: 20px; /* מרחק מהצד הימני */
+  left: 20px; /* מרחק מהצד השמאלי */
   background-color: #333;
   width: 60px;
   height: 60px;
@@ -91,7 +92,7 @@
   justify-content: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  z-index: 1000; /* הכפתור יהיה מעל רוב האלמנטים */
+  z-index: 1000; /* הכפתור יישאר מעל כל האלמנטים האחרים */
 }
 
 .floating-button:hover {
