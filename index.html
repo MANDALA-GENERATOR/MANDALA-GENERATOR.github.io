@@ -88,6 +88,10 @@
     <label>רוחב קנבס:
       <input type="number" id="canvasWidth" value="600" min="100">
     </label>
+    <label>צורת קנבס:
+  <input type="radio" name="canvasShape" value="circle" checked> עיגול
+  <input type="radio" name="canvasShape" value="square"> ריבוע
+    </label>
     <label>גובה קנבס:
       <input type="number" id="canvasHeight" value="600" min="100">
     </label>
@@ -144,6 +148,33 @@
     let previousX, previousY;
     let undoStack = [];
     let redoStack = [];
+
+    // בחירת אלמנטי הצורה
+const shapeRadios = document.getElementsByName("canvasShape");
+
+// עדכון הקנבס לפי הצורה שנבחרה
+function updateCanvasShape() {
+  const selectedShape = Array.from(shapeRadios).find(radio => radio.checked).value;
+  
+  if (selectedShape === "circle") {
+    // עדכון למצב עגול
+    drawSectorLines(sectorsInput.value); // צייר את הסקטורים
+    overlay.style.display = ""; // הצגת הקווים
+    canvas.style.borderRadius = "50%"; // שינוי הקנבס לעגול
+  } else if (selectedShape === "square") {
+    // עדכון למצב ריבוע
+    overlay.style.display = "none"; // הסתרת הקווים
+    canvas.style.borderRadius = "0"; // ביטול העיגול
+  }
+}
+
+// הוספת מאזין לשינוי צורה
+shapeRadios.forEach(radio => {
+  radio.addEventListener("change", updateCanvasShape);
+});
+
+// הפעלת העדכון בעת הטעינה הראשונית
+updateCanvasShape();
 
     // שמירה של מצב הקנבס לפני כל פעולה
     function saveState() {
