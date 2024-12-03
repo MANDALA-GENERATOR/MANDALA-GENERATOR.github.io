@@ -312,31 +312,29 @@ redoActionButton.addEventListener("click", redoLastAction);
     // ציור סקטורים
     function drawSectorLines(sectors) {
       overlay.innerHTML = ""; // נקה את הקווים הקודמים
-      const angleStep = (2 * Math.PI) / sectors;
+    function drawSectorLines(sectors) {
+  overlay.innerHTML = ""; // נקה את הקווים הקודמים
+  const angleStep = (2 * Math.PI) / sectors;
 
-      // עדכון הקואורדינטות של הקווים בהתאם לגודל הקנבס החדש
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
 
-      for (let i = 0; i < sectors; i++) {
-        const x1 = centerX;
-        const y1 = 0;
-        const x2 = centerX + Math.cos(angleStep * i) * centerX;
-        const y2 = centerY + Math.sin(angleStep * i) * centerY;
+  for (let i = 0; i < sectors; i++) {
+    const x2 = centerX + Math.cos(angleStep * i) * centerX;
+    const y2 = centerY + Math.sin(angleStep * i) * centerY;
 
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        const angle = angleStep * i;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
-        line.setAttribute("x1", centerX);
-        line.setAttribute("y1", centerY);
-        line.setAttribute("x2", x2);
-        line.setAttribute("y2", y2);
-        line.setAttribute("stroke", "#cccccc"); // אפור בהיר
-        line.setAttribute("stroke-width", 1); // קווים דקים
-        line.setAttribute("stroke-dasharray", "5,5"); // קווים מקווקווים
+    line.setAttribute("x1", centerX);
+    line.setAttribute("y1", centerY);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "#cccccc");
+    line.setAttribute("stroke-width", 1);
+    line.setAttribute("stroke-dasharray", "5,5");
 
-        overlay.appendChild(line);
-      }
+    overlay.appendChild(line);
+  }
     }
 
     // התחלת ציור
