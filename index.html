@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>יוצר מנדלות אונליין</title>
   <style>
     body {
@@ -77,6 +78,30 @@
   padding: 10px 0; /* רווחים סביב הטקסט */
   box-sizing: border-box; /* יכלול את הרווחים בתוך הגודל הכללי */
   }
+    .floating-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #333;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.floating-button:hover {
+  background-color: #555;
+}
+
+.material-icons {
+  font-size: 28px;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -123,6 +148,9 @@
   <p>3. שינויים בגודל הקנבס יגרמו למחיקת כל הציורים שבוצעו.</p>
   <p>© כל הזכויות שמורות - יוצר מנדלות</p>
 </div>
+  <div id="shareButton" class="floating-button">
+  <span class="material-icons">share</span>
+  </div>
   <script>
     // בחירת אלמנטים מהתפריט
     const canvas = document.getElementById("mandalaCanvas");
@@ -406,6 +434,33 @@ saveImageButton.addEventListener("click", () => {
   } else {
     // אם הרקע שקוף, אפס את צבע הרקע
     canvas.style.backgroundColor = "transparent";
+  }
+});
+
+    // משתנים לכפתור השיתוף
+const shareButton = document.getElementById("shareButton");
+const closeShareButton = document.getElementById("closeShareButton");
+
+// העלמת כפתור השיתוף לאחר 20 שניות
+setTimeout(() => {
+  shareButton.style.display = "none";
+}, 20000);
+
+// העלמת כפתור השיתוף בלחיצה על האיקס
+closeShareButton.addEventListener("click", () => {
+  shareButton.style.display = "none";
+});
+
+// לחיצה על כפתור השיתוף
+shareButton.addEventListener("click", () => {
+  if (navigator.share) {
+    navigator.share({
+      title: "יוצר מנדלות",
+      text: "מצאתי את יוצר המנדלות המדהים הזה! כדאי לך לבדוק אותו בקישור הבא:",
+      url: "https://mandala-generator.github.io/",
+    }).catch(console.error);
+  } else {
+    alert("שיתוף לא נתמך בדפדפן זה.");
   }
 });
 
